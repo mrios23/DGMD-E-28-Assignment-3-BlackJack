@@ -21,11 +21,11 @@ body{
 
 .card{
     height: 100px;
-    width: 50px;
+    width: 65px;
     border: 5px solid purple;
 }
 
-#hit, #wallet{
+#hit, #wallet, #stay{
     margin: 10px;
 }
 

@@ -352,38 +352,61 @@ window.onload = () => {
     let deck = dealOutCards(player, dealer);
 
     // create elements for player cards
-    //      player.getHand;
+    displayCards(player, "player-cards");
 
     // create elements for dealer cards
-    //      dealer.getHand;
+    displayCards(dealer, "dealer-cards");
+
+    // create onclick to handle hit
+    const hitBtn = document.getElementById("hit");
+
+    hitBtn.addEventListener("click", ()=>{
+        player.addCardToHand(deck.getCards.shift());
+        displayCards(player, "player-cards");
+    });
+
+    // create variable for winner
+    var winner;
+    const gameMsg = document.getElementById("message");
+
+    // create onclick to handle stay
+    const stayBtn = document.getElementById("stay");
+
+    stayBtn.addEventListener("click", ()=>{
+        console.log("User is going to stay");
+        // add logic for dealer to hit or stay
+        let dealerDecision = dealer.checkIfDealerShouldHit();
+
+        while(dealerDecision == true){
+            dealer.addCardToHand(deck.getCards.shift());
+            displayCards(dealer, "dealer-cards");
+
+            dealerDecision = dealer.checkIfDealerShouldHit();
+        }
+
+        if(dealerDecision == false){
+            console.log("dealer is staying... lets take a look at the totals");
+
+            //check totals & determine winner
+            let playerSum = player.calculateSum();
+            let dealerSum = dealer.calculateSum();
+
+            if(dealerSum > 21 || playerSum == 21 || dealerSum == playerSum){
+                winner = "player";
+            }
+
+            if(playerSum > 21 || dealerSum == 21){
+                winner = "dealer";
+            }
+
+            gameMsg.innerHTML = "The winner is " + winner;
+        }
+
+    });
     
     console.log("Player sum: " + player.calculateSum());
     console.log("Dealer sum: " + dealer.calculateSum());
-
-
-    let userInput = false;
-
-    if(userInput == true){
-        console.log("User wants to hit");
-
-        // shift will handle popping the card off the deck and return it
-        let card = deck.getCards.shift(0);
-        player.addCardToHand(card);
-
-        console.log(player.getHand);
-        console.log(deck.getCards);
-
-    }else{
-        console.log(player.getHand);
-        console.log("User wants to stay");
-        console.log(deck.getCards);
-    }
     
-}
-
-function askUser(){
-    // prompt user if want to hit
-    return confirm("Would you like to hit?");
 }
 
 function dealOutCards(player, dealer){
@@ -400,4 +423,24 @@ function dealOutCards(player, dealer){
     }
     
     return deck;
+}
+
+function displayCards(person, location){
+    //could add logic to determine location in here
+
+    var div = document.getElementById(location);
+
+    // ensure area is cleared before displaying cards
+    div.innerHTML="";
+
+    for(let i=0; i<person.getHand.length; i++){
+        let currCard = person.getHand[i]
+
+        let cardDiv = document.createElement("div");
+        cardDiv.setAttribute("class", "card");
+        
+        cardDiv.innerHTML = "Suit: " + currCard.getSuit + "  Number: " + currCard.getValue;
+        
+        div.appendChild(cardDiv);
+    }
 }
