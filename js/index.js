@@ -1,38 +1,3 @@
-/*
-    deck - associative array
-    const deck = [ hearts, spades, clubs, diamonds ]
-
-    card:
-        suit
-        number
-        value
-
-    create collection of cards 1-52
-
-    13 cards per suit
-    suit - A, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K
-
-    class basePlayer
-        hand = []
-        sum = 0;
-        
-        hit(card)
-            // add card to hand
-
-    class dealer extends basePlayer
-        // inherits hand obj
-        // inherits sum property
-        
-        isCloseTo21 
-            if(sum > 13) 
-                hit --> add card to hand
-    
-    class player extends basePlayer
-        // inherits hand
-        // inherits sum
-        wallet = 100;
-
-*/
 /*********** CLASS DECLARATIONS ***********/
 class Card{
 
@@ -73,7 +38,7 @@ class Deck{
     }
 
     #generateDeck(){
-        var suits = [ "diamonds", "hearts", "spades", "clubs"];
+        var suits = [ "diamond", "heart", "spade", "club"];
         var number = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
         var deck = [] 
     
@@ -350,6 +315,7 @@ window.onload = () => {
     // deal out cards to player and dealer
     // deck = remaining deck after initial 4 are dealt out
     let deck = dealOutCards(player, dealer);
+    let isGameOver = false;
 
     // create elements for player cards
     displayCards(player, "player-cards");
@@ -363,6 +329,15 @@ window.onload = () => {
     hitBtn.addEventListener("click", ()=>{
         player.addCardToHand(deck.getCards.shift());
         displayCards(player, "player-cards");
+
+        let playerSum = player.calculateSum();
+        if(playerSum > 21){
+            // end game
+            winner = "dealer";
+            isGameOver = true;
+
+            gameMsg.innerHTML = "BUST! The winner is " + winner;
+        }
     });
 
     // create variable for winner
@@ -386,6 +361,8 @@ window.onload = () => {
 
         if(dealerDecision == false){
             console.log("dealer is staying... lets take a look at the totals");
+
+            isGameOver = true;
 
             //check totals & determine winner
             let playerSum = player.calculateSum();
@@ -436,10 +413,18 @@ function displayCards(person, location){
     for(let i=0; i<person.getHand.length; i++){
         let currCard = person.getHand[i]
 
+        // creating card div
         let cardDiv = document.createElement("div");
         cardDiv.setAttribute("class", "card");
-        
-        cardDiv.innerHTML = "Suit: " + currCard.getSuit + "  Number: " + currCard.getValue;
+
+        // adding suit image to card div
+        let suitImage = new Image();
+        suitImage.src = "images/"+ currCard.getSuit + ".png";
+        cardDiv.appendChild(suitImage);
+
+        // adding number to card div
+        let numberElement = document.createTextNode(currCard.getValue);
+        cardDiv.appendChild(numberElement);
         
         div.appendChild(cardDiv);
     }
