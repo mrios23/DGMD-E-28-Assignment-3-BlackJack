@@ -117,25 +117,10 @@ class BasePlayerLogic{
             }
         });
 
-        if(aceCount >0){
-            // if sum = 0 -> ace =11 -> sum 11
-            // if sum = 1 -> ace =11 -> sum 12
-            // if sum = 2 -> ace =11 -> sum 13
-            // if sum = 3 -> ace =11 -> sum 14
-            // if sum = 4 -> ace =11 -> sum 15
-            // if sum = 5 -> ace =11 -> sum 16
-            // if sum = 6 -> ace =11 -> sum 17
-            // if sum = 7 -> ace =11 -> sum 18
-            // if sum = 8 -> ace =11 -> sum 19
-            // if sum = 9 -> ace =11 -> sum 20
-            // if sum = 10 -> ace =11 -> sum 21
+        if(aceCount > 0){
             for(let i=0; i<aceCount; i++){
-                // for each ace in hand, determine if value of ace should be 1 or 11
-                if(0<= currSum <= 10){
-                    currSum +=11
-                }else{
-                    currSum +=1;
-                }
+                // if curr sum is greater than 11, ace = 1, else ace = 11
+                (currSum > 11) ? currSum+=1 : currSum+=11;
             }
         }
         return currSum;
@@ -293,10 +278,10 @@ window.onload = () => {
         let playerSum = player.calculateSum();
         if(playerSum > 21){
             // end game
-            winner = "dealer";
             isGameOver = true;
+            revealDealerLastCard();
+            gameMsg.innerHTML = "BUST! The winner is dealer" ;
 
-            gameMsg.innerHTML = "BUST! The winner is " + winner;
         }
     });
 
@@ -330,11 +315,27 @@ window.onload = () => {
             let playerSum = player.calculateSum();
             let dealerSum = dealer.calculateSum();
 
-            if(dealerSum > 21 || playerSum == 21 || dealerSum == playerSum){
-                winner = "player";
+            console.log("Player final sum: " + player.calculateSum());
+            console.log("Dealer final sum: " + dealer.calculateSum());
+
+            /*  winning conditions
+                    if dealer sum is not greater than 21
+                        dealer sum > player sum -> dealer
+                    player sum > 21 -> dealer
+
+                    if player sum is not greater than 21
+                        player sum > dealer sum -> player
+                        player sum == dealer sum -> player
+                    dealer sum > 21 -> player
+            */
+
+            if(dealerSum > 21 ||
+                (playerSum <= 21 && (playerSum > dealerSum || playerSum == dealerSum))){
+                    winner = "player";
             }
 
-            if(playerSum > 21 || dealerSum == 21){
+            if(playerSum > 21 || 
+                (dealerSum <= 21 && dealerSum > playerSum)){
                 winner = "dealer";
             }
 
@@ -343,8 +344,8 @@ window.onload = () => {
 
     });
     
-    console.log("Player sum: " + player.calculateSum());
-    console.log("Dealer sum: " + dealer.calculateSum());
+    console.log("Player initial sum: " + player.calculateSum());
+    console.log("Dealer initial sum: " + dealer.calculateSum());
     
 }
 
