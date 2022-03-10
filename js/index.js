@@ -95,7 +95,7 @@ class BasePlayerLogic{
     get getHand(){
         return this.hand;
     }
-    // see if we can get calculated sum
+    
     calculateSum(){
         let currSum = 0;
         let aceCount = 0;
@@ -270,46 +270,6 @@ window.onload = () => {
     let player = new Player(100);
     // let game = new BlackJackGame(dealer, player, deck);
 
-    // let allCards = deck.getCards;
-    // console.log(allCards);
-
-    /************ DEALER STUFF ************/
-    // console.log("********* Dealers current cards *********");
-    // console.log("*****************************************");
-
-    // console.log("Dealer First card: ");
-    // console.log(allCards[2]);
-
-    // console.log("Dealer Second card: ");
-    // console.log(allCards[3]);
-
-    // dealer.addCardToHand(allCards[2]);
-    // dealer.addCardToHand(allCards[3]);
-
-    // console.log("Dealer Sum: " + dealer.calculateSum());
-
-    // let shouldHit = dealer.checkIfDealerShouldHit();
-    // if(shouldHit == true){
-    //     console.log("Dealer should hit again");
-    // }else{
-    //     console.log("Dealer should stay");
-    // }
-
-    /************ PLAYER STUFF ************/
-    // console.log("********* Players current cards *********");
-    // console.log("*****************************************");
-
-    // console.log("Player First card: ");
-    // console.log(allCards[0]);
-
-    // console.log("Player Second card: ");
-    // console.log(allCards[1]);
-
-    // player.addCardToHand(allCards[0]);
-    // player.addCardToHand(allCards[1]);
-
-    // console.log("Player Sum: " + player.calculateSum());
-
     /************ Game Logic ************/
 
     // deal out cards to player and dealer
@@ -318,17 +278,17 @@ window.onload = () => {
     let isGameOver = false;
 
     // create elements for player cards
-    displayCards(player, "player-cards");
+    displayCards(player);
 
     // create elements for dealer cards
-    displayCards(dealer, "dealer-cards");
+    displayCards(dealer);
 
     // create onclick to handle hit
     const hitBtn = document.getElementById("hit");
 
     hitBtn.addEventListener("click", ()=>{
         player.addCardToHand(deck.getCards.shift());
-        displayCards(player, "player-cards");
+        displayCards(player);
 
         let playerSum = player.calculateSum();
         if(playerSum > 21){
@@ -354,13 +314,15 @@ window.onload = () => {
 
         while(dealerDecision == true){
             dealer.addCardToHand(deck.getCards.shift());
-            displayCards(dealer, "dealer-cards");
+            displayCards(dealer);
 
             dealerDecision = dealer.checkIfDealerShouldHit();
         }
 
         if(dealerDecision == false){
             console.log("dealer is staying... lets take a look at the totals");
+
+            revealDealerLastCard();
 
             isGameOver = true;
 
@@ -402,8 +364,16 @@ function dealOutCards(player, dealer){
     return deck;
 }
 
-function displayCards(person, location){
-    //could add logic to determine location in here
+function displayCards(person){
+    var location;
+
+    if(person instanceof Player){
+        location = "player-cards"
+    }
+
+    if(person instanceof Dealer){
+        location = "dealer-cards";
+    }
 
     var div = document.getElementById(location);
 
@@ -417,15 +387,35 @@ function displayCards(person, location){
         let cardDiv = document.createElement("div");
         cardDiv.setAttribute("class", "card");
 
-        // adding suit image to card div
+        // creating div for card content
+        let cardDivContent = document.createElement("div");
+
+        // adding suit image to card content
         let suitImage = new Image();
         suitImage.src = "images/"+ currCard.getSuit + ".png";
-        cardDiv.appendChild(suitImage);
+        cardDivContent.appendChild(suitImage);
 
-        // adding number to card div
-        let numberElement = document.createTextNode(currCard.getValue);
-        cardDiv.appendChild(numberElement);
+        // adding number to card content
+        let numberElement = document.createElement("p");
+        let number = document.createTextNode(currCard.getValue);
+        numberElement.appendChild(number);
+
+        // appending card content to card
+        cardDivContent.appendChild(numberElement);
+        cardDiv.appendChild(cardDivContent);
         
+        // appending card to display area
         div.appendChild(cardDiv);
     }
+
+    if(person instanceof Dealer){
+        let lastDealerCardDiv = div.lastElementChild;
+        let lastCardContent = lastDealerCardDiv.lastElementChild;
+        lastCardContent.setAttribute("class","blur");
+    }
+}
+
+function revealDealerLastCard(){
+    let div = document.getElementById("dealer-cards").lastElementChild;
+    let target = div.lastElementChild.removeAttribute("class", "blur");
 }
