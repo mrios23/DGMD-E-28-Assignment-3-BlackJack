@@ -125,6 +125,10 @@ class BasePlayerLogic{
         }
         return currSum;
     }
+
+    clearHand(){
+        this.hand = []
+    }
 }
 
 class Dealer extends BasePlayerLogic{
@@ -146,6 +150,10 @@ class Dealer extends BasePlayerLogic{
 
     calculateSum(){
         return super.calculateSum();
+    }
+
+    clearHand(){
+        return super.clearHand();
     }
 
     // Dealer specific methods
@@ -176,177 +184,194 @@ class Player extends BasePlayerLogic{
         return super.calculateSum();
     }
 
+    clearHand(){
+        return super.clearHand();
+    }
+
     // Player specific methods
     winBet(bet){
         this.wallet = this.wallet + bet;
     }
 
-    loseBet(){
+    loseBet(bet){
         this.wallet = this.wallet - bet;
     }
 
     getWallet(){
         return this.wallet;
     }
+
+    setWallet(amount){
+        this.wallet = amount;
+    }
 }
 
-// class BlackJackGame{
-//     dealer; player; deck;
+/*********** GLOBAL VARIABLES ***********/
+const addToWallet = document.getElementById("add-to-wallet");
+const walletAmount = document.getElementById("wallet-amount");
+const gameBoard = document.getElementById("game-board");
+const welcomePage = document.getElementById("welcome-message");
+const gameMsg = document.getElementById("game-message");
+const hitBtn = document.getElementById("hit");
+const stayBtn = document.getElementById("stay");
 
-//     constructor(dealer, player, deck){
-//         this.dealer = dealer;
-//         this.player = player;
-//         this.deck = deck;
-//     }
-    
-//     allCards = this.deck.getCards;
-//     cardCount = this.deck.getCards.length;
-//     isGameOver = false;
-//     winner = "";
-
-
-//     dealOutCards(){
-//         // give two cards to player from deck
-//         this.player.addCardToHand(allCards[0]);
-//         this.player.addCardToHand(allCards[1]);
-
-//         // give two cards to dealer from deck
-//         this.dealer.addCardToHand(allCards[2]);
-//         this.dealer.addCardToHand(allCards[3]);
-        
-//         this.cardCount -= 4;
-//     }
-
-//     play(){
-
-//         console.log(deck)
-//         // this.dealOutCards();
-
-//         // console.log("Dealer cards are: ");
-//         // console.log(this.dealer.getHand);
-
-//         // console.log("Player cards are: ");
-//         // console.log(this.player.getHand);
-
-//         // prompt user if they want to hit
-
-//         // if they want to hit - give them another card
-
-//         // repeat until user says no
-
-//         // check dealer status
-//         // hit dealer if needed
-
-//         // once user and dealer is done with cards
-
-//         // calculate sum to determine winner
-//         // dealerSum = dealer.calculateSum();
-//         // playerSum = player.calculateSum();
-
-
-//         // update user bet
-
-//     }
-// }
+const bet1 = document.getElementById("bet1");
+const bet5 = document.getElementById("bet5");
+const bet10 = document.getElementById("bet10");
+const betAmount = document.getElementById("current-bet");
 
 window.onload = () => {
-    // let deck = new Deck();
-    let dealer = new Dealer();
-    let player = new Player(100);
-    // let game = new BlackJackGame(dealer, player, deck);
 
-    /************ Game Logic ************/
-
-    // deal out cards to player and dealer
-    // deck = remaining deck after initial 4 are dealt out
-    let deck = dealOutCards(player, dealer);
+    var dealer = new Dealer();
+    var player = new Player(100);
     let isGameOver = false;
-
-    // create elements for player cards
-    displayCards(player);
-
-    // create elements for dealer cards
-    displayCards(dealer);
-
-    // create onclick to handle hit
-    const hitBtn = document.getElementById("hit");
-
-    hitBtn.addEventListener("click", ()=>{
-        player.addCardToHand(deck.getCards.shift());
-        displayCards(player);
-
-        let playerSum = player.calculateSum();
-        if(playerSum > 21){
-            // end game
-            isGameOver = true;
-            revealDealerLastCard();
-            gameMsg.innerHTML = "BUST! The winner is dealer" ;
-
-        }
-    });
-
-    // create variable for winner
     var winner;
-    const gameMsg = document.getElementById("message");
+    
+    addToWallet.addEventListener("click", ()=>{
+        // get wallet amount & set variable
+        let startingAmount = parseInt(document.getElementById("starting-amount").value);
 
-    // create onclick to handle stay
-    const stayBtn = document.getElementById("stay");
+        // write wallet amount to page
+        player.setWallet(startingAmount);
+        walletAmount.innerHTML = player.getWallet();
 
-    stayBtn.addEventListener("click", ()=>{
-        console.log("User is going to stay");
-        // add logic for dealer to hit or stay
-        let dealerDecision = dealer.checkIfDealerShouldHit();
-
-        while(dealerDecision == true){
-            dealer.addCardToHand(deck.getCards.shift());
-            displayCards(dealer);
-
-            dealerDecision = dealer.checkIfDealerShouldHit();
-        }
-
-        if(dealerDecision == false){
-            console.log("dealer is staying... lets take a look at the totals");
-
-            revealDealerLastCard();
-
-            isGameOver = true;
-
-            //check totals & determine winner
-            let playerSum = player.calculateSum();
-            let dealerSum = dealer.calculateSum();
-
-            console.log("Player final sum: " + player.calculateSum());
-            console.log("Dealer final sum: " + dealer.calculateSum());
-
-            /*  winning conditions
-                    if dealer sum is not greater than 21
-                        dealer sum > player sum -> dealer
-                    player sum > 21 -> dealer
-
-                    if player sum is not greater than 21
-                        player sum > dealer sum -> player
-                        player sum == dealer sum -> player
-                    dealer sum > 21 -> player
-            */
-
-            if(dealerSum > 21 ||
-                (playerSum <= 21 && (playerSum > dealerSum || playerSum == dealerSum))){
-                    winner = "player";
-            }
-
-            if(playerSum > 21 || 
-                (dealerSum <= 21 && dealerSum > playerSum)){
-                winner = "dealer";
-            }
-
-            gameMsg.innerHTML = "The winner is " + winner;
-        }
+        // hide welcome page & show gameboard
+        gameBoard.style.display = "inline";
+        welcomePage.style.display = "none";
 
     });
+
+    // choose bet amount to begin
+    gameMsg.innerHTML = "Place a bet to begin";
     
-    console.log("Player initial sum: " + player.calculateSum());
-    console.log("Dealer initial sum: " + dealer.calculateSum());
+    // Handle $1 bet
+    bet1.addEventListener("click", ()=>{
+        // check if wallet has money
+        if(player.getWallet() > 0){
+            (!isGameOver == true) ? playGame(1) : resetGame(1, player, dealer);
+        }else{
+            welcomePage.style.display = "inline";
+            welcomePage.firstElementChild.innerHTML = "Please add more money to your virtual wallet to play again!";
+            
+            gameBoard.style.display = "none";
+            clearCards();
+            clearMsg();
+        }
+    });
     
+    // Handle $5 bet
+    bet5.addEventListener("click", ()=>{
+        // check if wallet has money
+        if(player.getWallet() > 0){
+            (!isGameOver == true) ? playGame(5) : resetGame(5, player, dealer);
+        }else{
+            welcomePage.style.display = "inline";
+            welcomePage.firstElementChild.innerHTML = "Please add more money to your virtual wallet to play again!";
+            
+            gameBoard.style.display = "none";
+            clearCards();
+            clearMsg();
+        }
+    });
+
+    // Handle $10 bet
+    bet10.addEventListener("click", ()=>{
+        // check if wallet has money
+        if(player.getWallet() > 0){
+            (!isGameOver == true) ? playGame(10) : resetGame(10, player, dealer);
+        }else{
+            welcomePage.style.display = "inline";
+            welcomePage.firstElementChild.innerHTML = "Please add more money to your virtual wallet to play again!";
+            
+            gameBoard.style.display = "none";
+            clearCards();
+            clearMsg();
+        }        
+    });
+
+    function playGame(bet){
+        //remove game message
+        clearMsg();
+
+        // display current bet amount
+        betAmount.innerHTML = bet;
+
+        // deal out cards to player and dealer, the deck = remaining deck after initial 4 are dealt out
+        let deck = dealOutCards(player, dealer);
+
+        displayCards(player);
+        displayCards(dealer);
+        
+        // Handle when user wants to "hit"
+        hitBtn.addEventListener("click", ()=>{
+
+            player.addCardToHand(deck.getCards.shift());
+            displayCards(player);
+
+            // check if player busted
+            let playerSum = player.calculateSum();
+            if(playerSum > 21){
+                isGameOver = true;
+                revealDealerLastCard();
+                gameMsg.innerHTML = "BUST! Dealer won - lost bet! Place another bet to play again!";
+                
+                player.loseBet(bet);
+                displayWalletAmount(player.getWallet());
+                clearBetAmount();
+            }
+        });
+
+        // Handle when user wants to stay/no more cards (kicks off end game process)
+        stayBtn.addEventListener("click", ()=>{
+            
+            // see if dealer should hit
+            let dealerDecision = dealer.checkIfDealerShouldHit();
+
+            while(dealerDecision == true){
+                dealer.addCardToHand(deck.getCards.shift());
+                displayCards(dealer);
+
+                dealerDecision = dealer.checkIfDealerShouldHit();
+            }
+
+            if(dealerDecision == false){
+                revealDealerLastCard();
+                isGameOver = true;
+
+                //check totals & determine winner
+                let playerSum = player.calculateSum();
+                let dealerSum = dealer.calculateSum();
+
+                if(dealerSum > 21 ||
+                    (playerSum <= 21 && (playerSum > dealerSum || playerSum == dealerSum))){
+                        winner = "You";
+
+                        isGameOver = true;
+                        player.winBet(bet);
+                        displayWalletAmount(player.getWallet());
+                        clearBetAmount();
+                }
+
+                if(playerSum > 21 || 
+                    (dealerSum <= 21 && dealerSum > playerSum)){
+                    winner = "Dealer";
+
+                    isGameOver = true;
+                    player.loseBet(bet);
+                    displayWalletAmount(player.getWallet());
+                    clearBetAmount();
+                }
+                gameMsg.innerHTML = winner + " won! Place another bet to play again.";
+            }
+        });
+    }
+
+    function resetGame(bet, player, dealer){
+        player.clearHand();
+        dealer.clearHand();
+        isGameOver = false;
+        playGame(bet);
+    }
 }
 
 function dealOutCards(player, dealer){
@@ -361,7 +386,6 @@ function dealOutCards(player, dealer){
         player.addCardToHand(cards.shift());
         dealer.addCardToHand(cards.shift());
     }
-    
     return deck;
 }
 
@@ -376,9 +400,8 @@ function displayCards(person){
         location = "dealer-cards";
     }
 
-    var div = document.getElementById(location);
-
     // ensure area is cleared before displaying cards
+    var div = document.getElementById(location);
     div.innerHTML="";
 
     for(let i=0; i<person.getHand.length; i++){
@@ -419,4 +442,24 @@ function displayCards(person){
 function revealDealerLastCard(){
     let div = document.getElementById("dealer-cards").lastElementChild;
     let target = div.lastElementChild.removeAttribute("class", "blur");
+}
+
+function clearCards(){
+    var dealerCards = document.getElementById("dealer-cards");
+    dealerCards.innerHTML = "";
+
+    var playerCards = document.getElementById("player-cards");
+    playerCards.innerHTML = "";
+}
+
+function displayWalletAmount(amount){
+    walletAmount.innerHTML = amount;
+}
+
+function clearBetAmount(){
+    betAmount.innerHTML = "";
+}
+
+function clearMsg(){
+    gameMsg.innerHTML = "";
 }

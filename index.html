@@ -11,27 +11,53 @@
     <body>
         <div id="gameContent">
             <h1>Black Jack</h1>
-            <div id="cards">
-                <!-- Suit Image Free Sources:
-                    <a href="https://www.flaticon.com/free-icons/poker-cards" title="poker cards icons">Poker cards icons created by Made by Made Premium - Flaticon</a>
-                -->
+            
+            <div id="welcome-message">
                 <div>
-                    <p>Dealers Cards</p>
-                    <div id="dealer-cards" class="nextTo"></div>
+                    Welcome to Black Jack! <br/>
+                    Enter below how much money you'd like to put in your virtual wallet.
                 </div>
-                <div>
-                    <p>Your Cards</p>
-                    <div id="player-cards" class="nextTo"></div>
+                <form action="#">
+                    <input type="number" id="starting-amount" placeholder="Dollar Amount"><br />
+                    <button id="add-to-wallet" type="button">Add to Wallet</button>
+                </form>
+            </div>
+            <div id="game-board">
+                <div id="game-message">&nbsp;</div>
+                <div id="cards">
+                    <!-- Suit Image Free Sources:
+                        <a href="https://www.flaticon.com/free-icons/poker-cards" title="poker cards icons">Poker cards icons created by Made by Made Premium - Flaticon</a> -->
+                    <div>
+                        <p>Dealers Cards</p>
+                        <div id="dealer-cards" class="nextTo"></div>
+                    </div>
+                    <div>
+                        <p>Your Cards</p>
+                        <div id="player-cards" class="nextTo"></div>
+                    </div>
+                </div>
+                <div id="controllers">
+                    <div id="gameControls">                    
+                        <div>
+                            <div id="hit">Hit</div>
+                            <div class="wallet">Wallet Amount:</div>
+                            <div class="wallet">Bet Amount:</div>
+                        </div>
+                        <div>
+                            <div id="stay">Stay</div>
+                            <div class="wallet" id="wallet-amount"></div>
+                            <div class="wallet" id="current-bet"></div>
+                        </div>
+                        <div>
+                            <div class="bet" id="bet1">Bet $1</div>
+                            <div class="bet" id="bet5">Bet $5</div>
+                            <div class="bet" id="bet10">Bet $10</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div id="gameControls">
-                <div id="hit">Hit</div>
-                <div id="stay">Stay</div>
-                <div id="wallet">Wallet</div>
             </div>
-            <div id="message">&nbsp;</div>
-        </div>
-        
+            
 
         <script src="js/index.js" async defer></script>
     </body>
