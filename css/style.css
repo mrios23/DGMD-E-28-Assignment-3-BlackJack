@@ -78,9 +78,7 @@ img{
 }
 
 #game-message{
-    /* color: rgb(0, 174, 255); */
     color: black;
     font-size: x-large;
-    /* background-color: rgb(208, 235, 199); */
     background-color: red;;
 }
